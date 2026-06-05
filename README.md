@@ -266,6 +266,7 @@ If you reuse this codebase or adapt the architecture in academic work, please ci
 
 ## Authors
 - Hu Li lihu0628@qq.com
+- Chunchao Wang wangchunchao@caas.cn
 - Junjie Fu fujunjie@caas.cn
 
 Copyright (c) Institute of Crop Sciences, Chinese Academy of Agricultural Sciences. 2024-2026. All rights reserved.
