@@ -1,0 +1,3 @@
+parent1	parent2
+Pattern1_1	Pattern1_2
+Pattern2_1	Pattern2_2

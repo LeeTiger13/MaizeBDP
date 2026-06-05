@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local configuration
+MaizeChatbot/config.local.yaml
+.env
+.env.*
+
+# Generated logs and outputs
+*.log
+*.out
+*.tmp
+*.pdf
+*.png
+*.json
+!MaizeBDP_Function_Module/**/test_data/*.json
+
+# Common workflow artifacts from module scripts
+filter*
+filtered*
+output*
+merge*
+study*
+reference.txt
+common.site
+temp_*
+user_id.txt
+sample_list.txt
+high_het_samples_to_remove.txt
+ibs.mdist
+ibs.mdist.id
+
+# Compressed/indexed intermediate files
+*.gz
+*.tbi
+!MaizeBDP_Function_Module/**/test_data/*.vcf
+
+# IDE
+.DS_Store
+Thumbs.db

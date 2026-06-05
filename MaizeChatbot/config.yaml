@@ -1,0 +1,136 @@
+# Public template configuration for MaizeChatbot.
+# Copy this file to `config.local.yaml` and fill in your private values before running.
+
+version: "1.0"
+last_modified: "2026-06-05"
+author: "MaizeBDP team"
+
+routing_model:
+  api_key: "YOUR_CLOUD_API_KEY"
+  base_url: "https://your-openai-compatible-endpoint/v1"
+  model: "your-cloud-routing-model"
+
+answer_model:
+  provider: "ollama"
+  api_key: ""
+  api_base_url: "http://127.0.0.1:11434"
+  model: "your-answer-model"
+
+embedding_model:
+  provider: "ollama"
+  api_key: ""
+  api_base_url: "http://127.0.0.1:11434"
+  model: "your-embedding-model"
+
+retrieval_backend:
+  api_base_url: "http://127.0.0.1:8081"
+  timeout: 30
+  collection_name: "your_retrieval_collection"
+
+knowledge_graph:
+  uri: "bolt://127.0.0.1:7687"
+  auth: ["neo4j", "YOUR_NEO4J_PASSWORD"]
+
+assets:
+  reranker_path: "/path/to/your/reranker-model"
+
+search:
+  query_topk: 10
+  final_topk: 5
+  token_limit: 2048
+
+variety_alias_path: "variety_alias.yaml"
+
+cypher:
+  query_cypher: |
+    MATCH (target:Variety {name: $name})
+
+    OPTIONAL MATCH (mat:Variety)-[:is_maternal]->(target)
+    OPTIONAL MATCH (pat:Variety)-[:is_paternal]->(target)
+    OPTIONAL MATCH (child_m:Variety)<-[:is_maternal]-(target)
+    OPTIONAL MATCH (child_p:Variety)<-[:is_paternal]-(target)
+
+    OPTIONAL MATCH (mat)-[:is_maternal]->(sib_m:Variety)
+    WHERE sib_m <> target AND mat IS NOT NULL
+    OPTIONAL MATCH (pat)-[:is_paternal]->(sib_p:Variety)
+    WHERE sib_p <> target AND pat IS NOT NULL
+
+    WITH target, mat, pat,
+      collect(DISTINCT child_m) AS children_m,
+      collect(DISTINCT child_p) AS children_p,
+      collect(DISTINCT sib_m) AS siblings_m,
+      collect(DISTINCT sib_p) AS siblings_p
+
+    WITH
+      [target] +
+      CASE WHEN mat IS NOT NULL THEN [mat] ELSE [] END +
+      CASE WHEN pat IS NOT NULL THEN [pat] ELSE [] END +
+      children_m + children_p + siblings_m + siblings_p AS node_list
+
+    UNWIND node_list AS node
+    WITH DISTINCT node WHERE node IS NOT NULL
+    WITH collect(node) AS all_nodes
+
+    UNWIND all_nodes AS v
+    OPTIONAL MATCH (m:Variety)-[:is_maternal]->(v)
+    OPTIONAL MATCH (p:Variety)-[:is_paternal]->(v)
+    WITH v, m, p, all_nodes
+    WHERE m IS NOT NULL AND p IS NOT NULL
+
+    RETURN
+      collect({child: v.name, maternal: m.name, paternal: p.name}) AS triples,
+      [n IN all_nodes | n {.*}] AS all_meta;
+
+prompts:
+  task_judgement: |
+    You are a professional task-routing expert serving a maize breeding platform that provides two tools:
+    RAG and Knowledge Graph (KG). Your job is to decide which tool to invoke based on the user's question.
+    Use KG only when the question is explicitly asking for the information of a specific maize variety.
+    Typical KG patterns include (but are not limited to):
+    - "What is the information of variety <VarietyName>"
+    - Any semantically identical request for variety details. (Both for English and Chinese)
+    All other questions must be classified as RAG.
+    Your response must be a single line of valid JSON:
+    {"task": "KG" or "RAG", "entity": "<VarietyName> or <full user query>"}
+    Extract the exact variety name for KG; copy the entire user query for RAG.
+
+  rag_prompt: |
+    You are a senior crop genetics expert. Provide a technical, direct answer using the provided excerpts.
+
+    Rules:
+    1. Direct Synthesis: Synthesize specific molecular mechanisms, mutations, or regulatory relationships mentioned.
+    2. No Disclaimers: Never use phrases like "The provided excerpts do not mention," "The context is silent," or "Based on the text."
+    3. Seamless Integration: If specific experimental details for the exact query are missing, pivot immediately to describing the known biological functions or pathways of the mentioned entities found in the excerpts.
+    4. Technical Context: If the excerpts are off-topic, provide a single sentence of established, peer-reviewed knowledge about the subject to ensure the user gets a high-value response.
+    5. Constraints: Maximum 2 sentences. Output only the technical result.
+
+  summary_prompt: |
+    You are a helpful assistant that summarizes the conversation history.
+    Summarize the key information from this dialogue in one sentence for context tracking.
+    Focus on: entities (varieties, genes, traits), and main conclusions.
+    Keep it concise (< 100 words).
+    If the conversation is mostly in Chinese, reply in Chinese; if mostly in English, reply in English.
+    Keep it under 50 words.
+    Dialogue:
+    {dialogue}
+
+  rewrite_prompt: |
+    You are an expert dialogue state tracker for a maize breeding QA system.
+    Your task: Rewrite the current user question into a self-contained, unambiguous version,
+    by incorporating relevant context from the conversation history.
+
+    [Conversation Summary]
+    {history_summary}
+
+    [Current Question]
+    {question}
+
+    Rules:
+    1. Resolve pronouns and vague references using the summary.
+    2. Expand elliptical questions to full form.
+    3. If the current question is a new topic or unrelated to the summary, do not force the old entity into the new question.
+    4. Preserve the user's original intent and technical terms.
+    5. If the input is mostly in Chinese, reply in Chinese; if mostly in English, reply in English.
+    6. Output only the rewritten question.
+
+    Rewritten question:
