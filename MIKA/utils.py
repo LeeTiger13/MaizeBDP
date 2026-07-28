@@ -87,7 +87,7 @@ class RemoteMilvusClient:
 # ========== Milvus ==========
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("MaizeBDP MaizeChatbot")
+logger = logging.getLogger("MaizeBDP MIKA")
 
 
 def _normalize_config(cfg: dict) -> dict:
@@ -157,7 +157,7 @@ def load_config() -> dict:
     """Load public template config and allow local/private overrides."""
     base_dir = Path(__file__).resolve().parent
     candidates = [
-        os.environ.get("MAIZECHATBOT_CONFIG"),
+        os.environ.get("MIKA_CONFIG"),
         str(base_dir / "config.local.yaml"),
         str(base_dir / "config.yaml"),
     ]
@@ -165,7 +165,7 @@ def load_config() -> dict:
     config_path = next((Path(path) for path in candidates if path and Path(path).exists()), None)
     if config_path is None:
         raise FileNotFoundError(
-            "No configuration file found. Create MaizeChatbot/config.local.yaml or provide MAIZECHATBOT_CONFIG."
+            "No configuration file found. Create MIKA/config.local.yaml or provide MIKA_CONFIG."
         )
 
     with config_path.open("r", encoding="utf-8") as f:
@@ -370,4 +370,3 @@ def hybrid_retrieval(query: str) -> List[Dict[str, Any]]:
         key=lambda x: x["rerank_score"],
         reverse=True
     )[:cfg['search']['final_topk']]
-

@@ -2,7 +2,7 @@
 
 MaizeBDP is a maize breeding decision platform prototype composed of two major modules:
 
-- `MaizeChatbot/`: a hybrid maize breeding assistant that routes questions to either a RAG pipeline or a maize pedigree knowledge graph.
+- `MIKA/`: a hybrid maize breeding assistant that routes questions to either a RAG pipeline or a maize pedigree knowledge graph.
 - `MaizeBDP_Function_Module/`: analytical scripts for genotype pretreatment, genetic background analysis, breeding guidance, and genomic selection.
 
 This public repository shares the platform architecture, script organization, and runnable examples. It is intended primarily as a reusable framework reference. Private production resources, including internal databases, vector stores, pretrained local model assets, and API credentials, are intentionally not distributed.
@@ -11,9 +11,9 @@ This public repository shares the platform architecture, script organization, an
 
 ```text
 MaizeBDP/
-|-- MaizeChatbot/
+|-- MIKA/
 |   |-- main.py
-|   |-- maizechatbot_langgraph.py
+|   |-- mika_langgraph.py
 |   |-- utils.py
 |   |-- language_adapter.py
 |   |-- config.yaml
@@ -28,7 +28,7 @@ MaizeBDP/
 
 ## Platform Overview
 
-`MaizeChatbot` uses a dual-path question answering architecture:
+`MIKA` uses a dual-path question answering architecture:
 
 1. A cloud LLM rewrites multi-turn questions and decides whether the query should go to RAG or KG.
 2. KG questions are answered from a Neo4j maize pedigree graph.
@@ -53,14 +53,14 @@ You can still reuse the architecture by replacing these resources with your own 
 
 ### Core Environment
 
-- Python 3.11 recommended for `MaizeChatbot`
+- Python 3.11 recommended for `MIKA`
 - Python 3.9+ recommended for `MaizeBDP_Function_Module`
 - Git
 - Docker optional, for containerized chatbot deployment
 
 ### Python Packages
 
-For `MaizeChatbot`, install packages equivalent to:
+For `MIKA`, install packages equivalent to:
 
 - `fastapi`
 - `uvicorn[standard]`
@@ -134,15 +134,15 @@ pip install pandas numpy matplotlib scikit-learn lightgbm
 
 ### 4. Configure the chatbot
 
-The committed file `MaizeChatbot/config.yaml` is a public template only.
+The committed file `MIKA/config.yaml` is a public template only.
 
 Create a private local config:
 
 ```cmd
-copy MaizeChatbot\config.yaml MaizeChatbot\config.local.yaml
+copy MIKA\config.yaml MIKA\config.local.yaml
 ```
 
-Then edit `MaizeChatbot/config.local.yaml` with your own:
+Then edit `MIKA/config.local.yaml` with your own:
 
 - `routing_model`: routing LLM API key, endpoint, and model
 - `answer_model`: provider, endpoint, credentials, and model for final answer generation
@@ -156,9 +156,9 @@ These settings should be adjusted according to the user's own server environment
 
 The application now loads configuration in this order:
 
-1. `MAIZECHATBOT_CONFIG` environment variable, if provided
-2. `MaizeChatbot/config.local.yaml`
-3. `MaizeChatbot/config.yaml`
+1. `MIKA_CONFIG` environment variable, if provided
+2. `MIKA/config.local.yaml`
+3. `MIKA/config.yaml`
 
 You can also override selected values through environment variables:
 
@@ -179,7 +179,7 @@ You can also override selected values through environment variables:
 ### 5. Start the chatbot API
 
 ```cmd
-cd MaizeChatbot
+cd MIKA
 python main.py
 ```
 
@@ -196,16 +196,16 @@ Example request body:
 }
 ```
 
-## Reproducing the MaizeChatbot Architecture with Your Own Resources
+## Reproducing the MIKA Architecture with Your Own Resources
 
-If you want to implement a chatbot similar to `MaizeChatbot` without using our private backend resources, the recommended replacement strategy is:
+If you want to implement a chatbot similar to `MIKA` without using our private backend resources, the recommended replacement strategy is:
 
 1. Replace the cloud routing model with any OpenAI-compatible chat model that can handle query rewriting and JSON routing.
 2. Build your own Neo4j maize pedigree graph with nodes such as `Variety` and relations such as `is_maternal` and `is_paternal`.
 3. Build your own vector corpus and expose it through a retrieval backend that can return relevant text chunks for RAG.
 4. Replace the answer model with any local or remote model that supports the chat completion and embedding workflow you want to use.
 5. Replace the reranker path with your own cross-encoder checkpoint.
-6. Keep the overall orchestration logic in `maizechatbot_langgraph.py` if you want the same dual-mode design.
+6. Keep the overall orchestration logic in `mika_langgraph.py` if you want the same dual-mode design.
 
 In other words, this repository is best understood as an architecture and workflow reference rather than a one-click fully reproducible service release. You can swap Milvus for another vector store, or provide your own compatible retrieval service, as long as it supports the same role in the pipeline. Likewise, you do not have to use Ollama for local deployment: you can also connect any suitable commercial or self-hosted LLM API, as long as the surrounding code and configuration are adjusted to match your own environment.
 
@@ -246,7 +246,7 @@ python extract_marker_multiple.py -i ..\Breeding_Guidance\variety_pattern_recomm
 
 ## Docker
 
-`MaizeChatbot/Dockerfile` is retained as an optional deployment method for packaging the chatbot API service. It is not required to use this repository.
+`MIKA/Dockerfile` is retained as an optional deployment method for packaging the chatbot API service. It is not required to use this repository.
 
 If you do not use Docker, you can run the framework directly in a normal Python environment.
 

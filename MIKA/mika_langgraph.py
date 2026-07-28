@@ -1,4 +1,4 @@
-"""Langgraph-based MaizeChatBot."""
+"""Langgraph-based MIKA."""
 import json
 from operator import add
 from typing import List, Dict, Any, Optional

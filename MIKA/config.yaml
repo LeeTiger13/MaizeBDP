@@ -1,4 +1,4 @@
-# Public template configuration for MaizeChatbot.
+# Public template configuration for MIKA.
 # Copy this file to `config.local.yaml` and fill in your private values before running.
 
 version: "1.0"

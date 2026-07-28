@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from utils import logger
-from maizechatbot_langgraph import graph_app
+from mika_langgraph import graph_app
 
 
 app = FastAPI(title="MaizeBDP Hybrid Gateway")
