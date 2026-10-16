@@ -164,9 +164,9 @@ def pretreatment_output(input_file, sample_heter, sample_miss, marker_miss, maf)
 
     stats_text = f'''Total markers: {total_variants:,}
     MAF<0.001: {ultra_rare_count:,} ({ultra_rare_count/total_variants*100:.2f}%)
-    0.001≤MAF<0.01: {rare_count:,} ({rare_count/total_variants*100:.2f}%)
-    0.01≤MAF<0.05: {low_freq_count:,} ({low_freq_count/total_variants*100:.2f}%)
-    MAF≥0.05: {common_count:,} ({common_count/total_variants*100:.2f}%)'''
+    0.001 <= MAF < 0.01: {rare_count:,} ({rare_count/total_variants*100:.2f}%)
+    0.01 <= MAF < 0.05: {low_freq_count:,} ({low_freq_count/total_variants*100:.2f}%)
+    MAF >= 0.05: {common_count:,} ({common_count/total_variants*100:.2f}%)'''
 
     plt.text(0.02, 0.98, stats_text, transform=plt.gca().transAxes, fontsize=9,
             bbox=dict(boxstyle='round,pad=0.5', alpha=0.9, facecolor='lightyellow'),

@@ -7,6 +7,8 @@ MaizeBDP is a maize breeding decision platform prototype composed of two major m
 
 This public repository shares the platform architecture, script organization, and runnable examples. It is intended primarily as a reusable framework reference. Private production resources, including internal databases, vector stores, pretrained local model assets, and API credentials, are intentionally not distributed.
 
+For server installation, deployment modes, hardware requirements, external services, and data dependencies, see [DEPLOYMENT.md](DEPLOYMENT.md). The repository contains the server-side implementation and representative examples; it is not a fully self-contained model or standalone data package.
+
 ## Repository Structure
 
 ```text
@@ -46,6 +48,8 @@ The following assets are project-specific and are not included in the public rel
 - local model assets, commercial LLM API settings, and reranker checkpoints
 - proprietary or unpublished breeding datasets
 - platform-side reference panels required by some function modules
+
+The included `MIKA/variety_alias.yaml` is a query-normalization resource that maps English or abbreviated variety names to the names used in the Chinese knowledge graph. Its Chinese values are intentional and required for bilingual variety matching.
 
 You can still reuse the architecture by replacing these resources with your own equivalents.
 

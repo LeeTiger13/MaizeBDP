@@ -72,10 +72,10 @@ class RemoteMilvusClient:
             if result.get("status") == "ok":
                 return [result.get("data", [])]
             else:
-                logger.warning(f"❌ Search failed: {result}")
+                logger.warning(f"Search failed: {result}")
                 return [[]]
         except requests.RequestException as e:
-            logger.error(f"❌ Connect Milvus Proxy failed: {e}")
+            logger.error(f"Connect Milvus Proxy failed: {e}")
             return [[]]
     
     def has_collection(self, collection_name: str = None) -> bool:
