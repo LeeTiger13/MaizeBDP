@@ -109,8 +109,8 @@ Some submodules also require matching reference panel files that are not include
 ### 1. Clone the repository
 
 ```cmd
-git clone <your-repo-url>
-cd MaizeBDP_git
+git clone https://github.com/LeeTiger13/MaizeBDP.git
+cd MaizeBDP
 ```
 
 ### 2. Prepare a Python environment

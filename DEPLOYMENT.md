@@ -85,7 +85,7 @@ The public repository does not include the production Neo4j graph, indexed liter
 ### 6.1 Clone the repository
 
 ```text
-git clone <your-repository-url>
+git clone https://github.com/LeeTiger13/MaizeBDP.git
 cd MaizeBDP
 ```
 
